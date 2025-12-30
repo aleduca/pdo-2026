@@ -9,15 +9,16 @@ try {
 	]);
 	// PREPARED STATEMENT
 	// prepare\execute
-	$query = 'SELECT * FROM users where id > ? and firstName = ?';
+	$query = 'SELECT * FROM users where id > :id and firstName = :firstname';
 	$prepared = $pdo->prepare($query);
 	$prepared->execute([
-		10, 'Alexandre',
+		'id' => 10,
+		'firstname' => 'Alexandre',
 	]);
 
 	$users = $prepared->fetchAll();
 
 	dd($users);
 } catch (\PDOException $e) {
-	dd($e->getMessage());
+	dd('Error ❌ ' . $e->getMessage());
 }

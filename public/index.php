@@ -7,6 +7,17 @@ try {
 	$pdo = new PDO($dsn, 'root', '', [
 		PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
 	]);
+	// PREPARED STATEMENT
+	// prepare\execute
+	$query = 'SELECT * FROM users where id > ? and firstName = ?';
+	$prepared = $pdo->prepare($query);
+	$prepared->execute([
+		10, 'Alexandre',
+	]);
+
+	$users = $prepared->fetchAll();
+
+	dd($users);
 } catch (\PDOException $e) {
 	dd($e->getMessage());
 }

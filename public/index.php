@@ -2,6 +2,19 @@
 
 require '../vendor/autoload.php';
 
+class User
+{
+	protected int $id;
+	protected string $firstName;
+	protected string $lastName;
+	protected string $email;
+	protected string $password;
+	protected ?string $image;
+	protected ?int $avatar_id;
+	protected string $created_at;
+	protected string $updated_at;
+}
+
 try {
 	$dsn = 'mysql:host=localhost;dbname=blog_ci;charset=utf8mb4';
 	$pdo = new PDO($dsn, 'root', '', [
@@ -9,14 +22,14 @@ try {
 	]);
 	// PREPARED STATEMENT
 	// prepare\execute
-	$query = 'SELECT * FROM users where id > :id and firstName = :firstname';
+	$query = 'SELECT * FROM users where id = :id';
 	$prepared = $pdo->prepare($query);
 	$prepared->execute([
-		'id' => 10,
-		'firstname' => 'Alexandre',
+		'id' => 50,
 	]);
 
-	$users = $prepared->fetchAll();
+	$prepared->setFetchMode(PDO::FETCH_CLASS, User::class);
+	$users = $prepared->fetchObject(User::class);
 
 	dd($users);
 } catch (\PDOException $e) {

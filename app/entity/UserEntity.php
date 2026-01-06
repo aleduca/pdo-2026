@@ -6,11 +6,12 @@ use core\entity\AbstractEntity;
 
 class UserEntity extends AbstractEntity
 {
-	protected array $validAttributes = [
-		'id',
-		'firstName',
-		'lastName',
-		'email',
-		'ln',
-	];
+	protected ?int $id = null;
+	protected ?string $firstName = null;
+	protected ?string $lastName = null;
+	protected ?string $email = null;
+	protected ?string $password = null;
+	protected ?string $image = null;
+	protected ?string $created_at = null;
+	protected ?string $updated_at = null;
 }

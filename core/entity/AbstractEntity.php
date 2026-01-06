@@ -2,31 +2,47 @@
 
 namespace core\entity;
 
-use core\exception\AttributeNotFoundException;
+use Exception;
 
 abstract class AbstractEntity
 {
-	protected array $attributes = [];
-	protected array $validAttributes = [];
-
-	public function __set(string $key, mixed $value)
+	protected function hydrate(array $data):void
 	{
-		if (!array_key_exists($key, $this->attributes) && in_array($key, $this->validAttributes)) {
-			$this->attributes[$key] = $value;
+		foreach ($data as $key => $value) {
+			if (is_null($value)) {
+				continue;
+			}
+
+			if (!property_exists($this, $key)) {
+				continue;
+			}
+
+			$this->$key = is_string($value) ? trim($value) : $value;
 		}
 	}
 
-	public function __get(string $key)
+
+	public static function fromArray(array $data)
 	{
-		throw new AttributeNotFoundException("Please use the get method for $key");
+		$instance = new static;
+
+		$instance->hydrate($data);
+
+		return $instance;
 	}
 
-	public function get(string $key)
+	public static function fromArrayList(array $data)
 	{
-		if (!array_key_exists($key, $this->attributes)) {
-			throw new AttributeNotFoundException("Attribute {$key} doesn not exist");
+		$entities = [];
+
+		foreach ($data as $value) {
+			if (!is_array($value)) {
+				throw new Exception('Please use the fetchAll method');
+			}
+
+			$entities[] = static::fromArray($value);
 		}
 
-		return $this->attributes[$key];
+		return $entities;
 	}
 }

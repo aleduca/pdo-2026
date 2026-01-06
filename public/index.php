@@ -11,15 +11,16 @@ try {
 	]);
 	// PREPARED STATEMENT
 	// prepare\execute
-	$query = 'SELECT * FROM users where id > :id';
+	$query = 'SELECT * FROM users where id = :id';
 	$prepared = $pdo->prepare($query);
 	$prepared->execute([
 		'id' => 50,
 	]);
 
-	$prepared->setFetchMode(PDO::FETCH_CLASS, UserEntity::class);
-	$user = $prepared->fetchAll();
-	dd($user);
+	// $prepared->setFetchMode(PDO::FETCH_CLASS, UserEntity::class);
+	$users = $prepared->fetch();
+	$data = UserEntity::fromArray($users);
+	dd($data);
 
 	// $userEntity = new UserEntity;
 	// $userEntity->age = 43;

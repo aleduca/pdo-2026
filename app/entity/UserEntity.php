@@ -2,7 +2,7 @@
 
 namespace app\entity;
 
-use core\entity\AbstractEntity;
+use core\database\entity\AbstractEntity;
 
 class UserEntity extends AbstractEntity
 {

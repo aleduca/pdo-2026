@@ -17,7 +17,7 @@ class Transaction
 
 	public static function get(): ?PDO
 	{
-		if (!self::$pdo && !self::$pdo?->inTransaction()) {
+		if (!self::$pdo || !self::$pdo?->inTransaction()) {
 			return Connection::open();
 		}
 

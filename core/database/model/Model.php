@@ -1,6 +1,6 @@
 <?php
 
-namespace core\model;
+namespace core\database\model;
 
 use core\database\entity\AbstractEntity;
 use core\database\Transaction;

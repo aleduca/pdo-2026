@@ -3,7 +3,7 @@
 namespace app\model;
 
 use app\entity\UserEntity;
-use core\model\Model;
+use core\database\model\Model;
 
 class User extends Model
 {

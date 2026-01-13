@@ -1,21 +1,39 @@
 <?php
 
-namespace core\database\model;
+namespace core\model;
 
 use core\database\entity\AbstractEntity;
 use core\database\Transaction;
 use PDO;
-use core\database\Connection;
 
-abstract class AbstractModel
+abstract class Model
 {
-	protected PDO $pdo;
 	protected string $table;
 	protected string $entity;
+	protected ?PDO $pdo;
 
 	public function __construct()
 	{
 		$this->pdo = Transaction::get();
+	}
+
+	public function find(int $id):?AbstractEntity
+	{
+		$stmt = $this->pdo->prepare("SELECT * FROM {$this->table} where id = :id");
+		$stmt->execute(['id' => $id]);
+
+		$row = $stmt->fetch();
+
+		return $row ? $this->entity::fromArray($row) : null;
+	}
+
+	public function findAll():array
+	{
+		$stmt = $this->pdo->query("SELECT * FROM {$this->table}");
+
+		$rows = $stmt->fetchAll();
+
+		return !empty($rows) ? $this->entity::fromArrayList($rows) : [];
 	}
 
 	public function create(array $data):int
@@ -33,23 +51,6 @@ abstract class AbstractModel
 		return (int)$this->pdo->lastInsertId();
 	}
 
-	public function find(int $id): ?AbstractEntity
-	{
-		$stmt = $this->pdo->prepare("SELECT * FROM {$this->table} where id = :id");
-		$stmt->execute(['id' => $id]);
-		$row = $stmt->fetch();
-
-		return $row ? $this->entity::fromArray($row) : null;
-	}
-
-	public function findAll():array
-	{
-		$stmt = $this->pdo->query("SELECT * FROM {$this->table}");
-		$rows = $stmt->fetchAll();
-
-		return $this->entity::fromArrayList($rows);
-	}
-
 	public function update(int $id, array $data):int
 	{
 		$fields = array_keys($data);
@@ -65,7 +66,7 @@ abstract class AbstractModel
 
 		$stmt->execute($data);
 
-		return $stmt->rowCount();
+		return (int)$stmt->rowCount();
 	}
 
 	public function delete(int $id):int
@@ -74,13 +75,6 @@ abstract class AbstractModel
 
 		$stmt->execute(['id' => $id]);
 
-		return $stmt->rowCount();
-	}
-
-	public function __destruct()
-	{
-		if (!$this->pdo?->inTransaction()) {
-			Connection::close();
-		}
+		return (int)$stmt->rowCount();
 	}
 }

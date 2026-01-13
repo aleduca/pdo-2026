@@ -3,9 +3,9 @@
 namespace app\model;
 
 use app\entity\UserEntity;
-use core\database\model\AbstractModel;
+use core\model\Model;
 
-class User extends AbstractModel
+class User extends Model
 {
 	protected string $table = 'users';
 	protected string $entity = UserEntity::class;

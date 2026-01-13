@@ -17,11 +17,22 @@ try {
 	// ✅Retorno de entidades nos SELECTS
 	// ✅Prepared Statement sempre que precisar
 	// ✅Um método para cada ação do CRUD - No Model Abstrato
+
 	Transaction::open();
 	$user = new User;
-	$rows = $user->findAll();
-	dd($rows);
+	$insertId = $user->create([
+		'firstName' => 'Alexandre',
+		'lastName' => 'Cardoso',
+		'email' => 'email@email.com.br',
+		'password' => password_hash(123, PASSWORD_DEFAULT),
+	]);
+
+	$updated = $user->update($insertId, [
+		'lastName' => 'Eduardo Cardoso',
+	]);
+
 	Transaction::close();
 } catch (\Throwable $e) {
 	Transaction::rollback();
+	dd($e);
 }

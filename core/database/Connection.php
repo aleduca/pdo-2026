@@ -8,7 +8,7 @@ class Connection
 {
 	protected static ?PDO $pdo = null;
 
-	public static function open(): ?PDO
+	public static function open()
 	{
 		if (is_null(self::$pdo)) {
 			self::$pdo = new PDO('mysql:host=localhost;dbname=blog_ci;charset=utf8mb4', 'root', '', [
@@ -18,12 +18,5 @@ class Connection
 		}
 
 		return self::$pdo;
-	}
-
-	public static function close()
-	{
-		if (self::$pdo && self::$pdo instanceof PDO) {
-			self::$pdo = null;
-		}
 	}
 }

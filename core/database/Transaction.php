@@ -3,42 +3,43 @@
 namespace core\database;
 
 use PDO;
-use Throwable;
 
 class Transaction
 {
 	protected static ?PDO $pdo = null;
 
-	public static function open(): void
+	public static function open():void
 	{
-		self::$pdo = Connection::open();
+		self::$pdo ??= Connection::open();
 		self::$pdo->beginTransaction();
 	}
 
-	public static function get(): ?PDO
+	public static function inTransaction():bool
 	{
-		if (!self::$pdo || !self::$pdo?->inTransaction()) {
-			return Connection::open();
+		return self::$pdo instanceof PDO && self::$pdo->inTransaction();
+	}
+
+	public static function get()
+	{
+		if (!self::inTransaction()) {
+			self::$pdo = Connection::open();
 		}
 
 		return self::$pdo;
 	}
 
-	public static function rollback():void
+	public static function close()
 	{
-		if (self::$pdo?->inTransaction()) {
-			self::$pdo->rollBack();
+		if (self::inTransaction()) {
+			self::$pdo->commit();
 		}
 	}
 
-	public static function exception(Throwable $e):string
+	public static function rollback()
 	{
-		return "❌ Error: {$e->getMessage()}";
-	}
-
-	public static function close()
-	{
-		self::$pdo->commit();
-		Connection::close();
+		if (self::inTransaction()) {
+			self::$pdo->rollBack();
+			dd(self::$pdo);
+		}
 	}
 }

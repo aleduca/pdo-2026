@@ -19,20 +19,13 @@ try {
 	// ✅Um método para cada ação do CRUD - No Model Abstrato
 
 	Transaction::open();
-	$user = new User;
-	$insertId = $user->create([
-		'firstName' => 'Alexandre',
-		'lastName' => 'Cardoso',
-		'email' => 'email@email.com.br',
-		'password' => password_hash(123, PASSWORD_DEFAULT),
-	]);
 
-	$updated = $user->update($insertId, [
-		'lastName' => 'Eduardo Cardoso',
-	]);
+	$user = new User;
+	$rows = $user->findAll();
+
+	dd($rows[0]->fullName());
 
 	Transaction::close();
 } catch (\Throwable $e) {
-	Transaction::rollback();
 	dd($e);
 }

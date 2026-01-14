@@ -2,10 +2,13 @@
 
 namespace core\database\model;
 
-use core\database\entity\AbstractEntity;
 use core\database\Transaction;
+use core\utils\Hydrator;
 use PDO;
 
+/**
+ * @template TEntity
+ */
 abstract class Model
 {
 	protected string $table;
@@ -17,23 +20,29 @@ abstract class Model
 		$this->pdo = Transaction::get();
 	}
 
-	public function find(int $id):?AbstractEntity
+	/**
+	 * @return TEntity
+	 */
+	public function find(int $id)
 	{
 		$stmt = $this->pdo->prepare("SELECT * FROM {$this->table} where id = :id");
 		$stmt->execute(['id' => $id]);
 
 		$row = $stmt->fetch();
 
-		return $row ? $this->entity::fromArray($row) : null;
+		return $row ? Hydrator::hydrate($this->entity, $row) : null;
 	}
 
+	/**
+	 * @return TEntity[]
+	 */
 	public function findAll():array
 	{
 		$stmt = $this->pdo->query("SELECT * FROM {$this->table}");
 
 		$rows = $stmt->fetchAll();
 
-		return !empty($rows) ? $this->entity::fromArrayList($rows) : [];
+		return !empty($rows) ? Hydrator::hydrateMany($this->entity, $rows) : [];
 	}
 
 	public function create(array $data):int
